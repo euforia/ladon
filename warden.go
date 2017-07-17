@@ -9,7 +9,7 @@ type Request struct {
 	Action string `json:"action"`
 
 	// Subejct is the subject that is requesting access.
-	Subject string `json:"subject"`
+	Subjects []string `json:"subject"`
 
 	// Context is the request's environmental context.
 	Context Context `json:"context"`

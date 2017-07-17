@@ -27,30 +27,30 @@ func TestWardenIsGranted(t *testing.T) {
 	}{
 		{
 			description: "should fail because no policies are found for peter",
-			r:           &Request{Subject: "peter"},
+			r:           &Request{Subjects: []string{"peter"}},
 			setup: func() {
-				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{Subject: "peter"})).Return(Policies{}, nil)
+				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{Subjects: []string{"peter"}})).Return(Policies{}, nil)
 			},
 			expectErr: true,
 		},
 		{
 			description: "should fail because lookup failure when accessing policies for peter",
-			r:           &Request{Subject: "peter"},
+			r:           &Request{Subjects: []string{"peter"}},
 			setup: func() {
-				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{Subject: "peter"})).Return(Policies{}, errors.New("asdf"))
+				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{Subjects: []string{"peter"}})).Return(Policies{}, errors.New("asdf"))
 			},
 			expectErr: true,
 		},
 		{
 			description: "should pass",
 			r: &Request{
-				Subject:  "peter",
+				Subjects: []string{"peter"},
 				Resource: "articles:1234",
 				Action:   "view",
 			},
 			setup: func() {
 				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{
-					Subject:  "peter",
+					Subjects: []string{"peter"},
 					Resource: "articles:1234",
 					Action:   "view",
 				})).Return(Policies{
@@ -67,13 +67,13 @@ func TestWardenIsGranted(t *testing.T) {
 		{
 			description: "should fail because subjects don't match (unlikely event)",
 			r: &Request{
-				Subject:  "ken",
+				Subjects: []string{"ken"},
 				Resource: "articles:1234",
 				Action:   "view",
 			},
 			setup: func() {
 				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{
-					Subject:  "ken",
+					Subjects: []string{"ken"},
 					Resource: "articles:1234",
 					Action:   "view",
 				})).Return(Policies{
@@ -90,13 +90,13 @@ func TestWardenIsGranted(t *testing.T) {
 		{
 			description: "should fail because resources mismatch",
 			r: &Request{
-				Subject:  "ken",
+				Subjects: []string{"ken"},
 				Resource: "printers:321",
 				Action:   "view",
 			},
 			setup: func() {
 				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{
-					Subject:  "ken",
+					Subjects: []string{"ken"},
 					Resource: "printers:321",
 					Action:   "view",
 				})).Return(Policies{
@@ -113,13 +113,13 @@ func TestWardenIsGranted(t *testing.T) {
 		{
 			description: "should fail because action mismatch",
 			r: &Request{
-				Subject:  "ken",
+				Subjects: []string{"ken"},
 				Resource: "articles:321",
 				Action:   "view",
 			},
 			setup: func() {
 				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{
-					Subject:  "ken",
+					Subjects: []string{"ken"},
 					Resource: "articles:321",
 					Action:   "view",
 				})).Return(Policies{
@@ -136,13 +136,13 @@ func TestWardenIsGranted(t *testing.T) {
 		{
 			description: "should pass",
 			r: &Request{
-				Subject:  "ken",
+				Subjects: []string{"ken"},
 				Resource: "articles:321",
 				Action:   "foo",
 			},
 			setup: func() {
 				m.EXPECT().FindRequestCandidates(gomock.Eq(&Request{
-					Subject:  "ken",
+					Subjects: []string{"ken"},
 					Resource: "articles:321",
 					Action:   "foo",
 				})).Return(Policies{

@@ -54,7 +54,7 @@ var cases = []struct {
 	{
 		description: "should fail because no policy is matching as field clientIP does not satisfy the CIDR condition of policy 1.",
 		accessRequest: &Request{
-			Subject:  "peter",
+			Subjects: []string{"peter"},
 			Action:   "delete",
 			Resource: "myrn:some.domain.com:resource:123",
 			Context: Context{
@@ -67,7 +67,7 @@ var cases = []struct {
 	{
 		description: "should fail because no policy is matching as the owner of the resource 123 is zac, not peter!",
 		accessRequest: &Request{
-			Subject:  "peter",
+			Subjects: []string{"peter"},
 			Action:   "delete",
 			Resource: "myrn:some.domain.com:resource:123",
 			Context: Context{
@@ -80,7 +80,7 @@ var cases = []struct {
 	{
 		description: "should pass because policy 1 is matching and has effect allow.",
 		accessRequest: &Request{
-			Subject:  "peter",
+			Subjects: []string{"peter"},
 			Action:   "delete",
 			Resource: "myrn:some.domain.com:resource:123",
 			Context: Context{
@@ -93,7 +93,7 @@ var cases = []struct {
 	{
 		description: "should pass because max is allowed to update all resources.",
 		accessRequest: &Request{
-			Subject:  "max",
+			Subjects: []string{"max"},
 			Action:   "update",
 			Resource: "myrn:some.domain.com:resource:123",
 		},
@@ -102,7 +102,7 @@ var cases = []struct {
 	{
 		description: "should pass because max is allowed to update all resource, even if none is given.",
 		accessRequest: &Request{
-			Subject:  "max",
+			Subjects: []string{"max"},
 			Action:   "update",
 			Resource: "",
 		},
@@ -111,7 +111,7 @@ var cases = []struct {
 	{
 		description: "should fail because max is not allowed to broadcast any resource.",
 		accessRequest: &Request{
-			Subject:  "max",
+			Subjects: []string{"max"},
 			Action:   "broadcast",
 			Resource: "myrn:some.domain.com:resource:123",
 		},
@@ -120,8 +120,8 @@ var cases = []struct {
 	{
 		description: "should fail because max is not allowed to broadcast any resource, even empty ones!",
 		accessRequest: &Request{
-			Subject: "max",
-			Action:  "broadcast",
+			Subjects: []string{"max"},
+			Action:   "broadcast",
 		},
 		expectErr: true,
 	},

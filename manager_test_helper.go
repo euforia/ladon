@@ -198,7 +198,7 @@ func TestHelperFindPoliciesForSubject(k string, s Manager) func(t *testing.T) {
 		}
 
 		res, err := s.FindRequestCandidates(&Request{
-			Subject:  "sqlmatch",
+			Subjects: []string{"sqlmatch"},
 			Resource: "article",
 			Action:   "create",
 		})
@@ -214,7 +214,7 @@ func TestHelperFindPoliciesForSubject(k string, s Manager) func(t *testing.T) {
 		}
 
 		res, err = s.FindRequestCandidates(&Request{
-			Subject:  "sqlamatch",
+			Subjects: []string{"sqlamatch"},
 			Resource: "article",
 			Action:   "create",
 		})

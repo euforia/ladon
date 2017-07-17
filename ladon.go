@@ -1,6 +1,8 @@
 package ladon
 
 import (
+	"log"
+
 	"github.com/pkg/errors"
 )
 
@@ -23,7 +25,7 @@ func (l *Ladon) IsAllowed(r *Request) (err error) {
 	if err != nil {
 		return err
 	}
-
+	log.Println("[DEBUG] Policies to check:", len(policies))
 	// Although the manager is responsible of matching the policies, it might decide to just scan for
 	// subjects, it might return all policies, or it might have a different pattern matching than Golang.
 	// Thus, we need to make sure that we actually matched the right policies.
@@ -48,10 +50,18 @@ func (l *Ladon) doPoliciesAllow(r *Request, policies []Policy) (err error) {
 		// Does the subject match with one of the policies?
 		// There are usually less subjects than resources which is why this is checked
 		// before checking for resources.
-		if sm, err := l.matcher().Matches(p, p.GetSubjects(), r.Subject); err != nil {
+		// if sm, err := l.matcher().Matches(p, p.GetSubjects(), r.Subject); err != nil {
+		// 	return err
+		// } else if !sm {
+		// 	// no, continue to next policy
+		// 	continue
+		// }
+
+		// Iterate through supplied subjects
+		matchedSubs, err := l.checkSubjects(p, r)
+		if err != nil {
 			return err
-		} else if !sm {
-			// no, continue to next policy
+		} else if !matchedSubs {
 			continue
 		}
 
@@ -82,6 +92,26 @@ func (l *Ladon) doPoliciesAllow(r *Request, policies []Policy) (err error) {
 	}
 
 	return nil
+}
+
+func (l *Ladon) checkSubjects(p Policy, r *Request) (bool, error) {
+	subjects := p.GetSubjects()
+
+	for _, sub := range r.Subjects {
+		// Does the subject match with one of the policies?
+		// There are usually less subjects than resources which is why this is checked
+		// before checking for resources.
+		if sm, err := l.matcher().Matches(p, subjects, sub); err != nil {
+			return false, err
+		} else if !sm {
+			// no match, continue to next policy
+			continue
+		}
+		// found
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func (l *Ladon) passesConditions(p Policy, r *Request) bool {
